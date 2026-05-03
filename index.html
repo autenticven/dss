@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Documento com Assinatura</title>
+    
+    <!-- Bibliotecas Necessárias -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        
+        .field { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="date"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        /* Área da Assinatura */
+        .signature-wrapper { border: 1px solid #000; background: #fff; position: relative; width: 100%; height: 200px; }
+        canvas { width: 100%; height: 100%; cursor: crosshair; }
+        
+        .buttons { margin-top: 20px; display: flex; gap: 10px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-clear { background: #e74c3c; color: white; }
+        .btn-save { background: #2ecc71; color: white; }
+        
+        /* Ajustes para o PDF */
+        #pdf-content { padding: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="pdf-content">
+    <h2>Diálogo Semanal de Segurança do Trabalho</h2>
+    <h2>Téc. de Segurança do Trabalho: Marcelo Farias </h2>
+
+
+    <hr>
+    
+    <div class="field">
+        <label for="nome">Nome Funcionários</label>
+        <input type="text" id="nome" placeholder="Digite seu nome">
+    </div>
+
+    <div class="field">
+        <label for="nome">Nome Funcionários</label>
+        <input type="text" id="nome" placeholder="Digite seu nome">
+    </div>
+
+    <div class="field">
+        <label for="nome">Nome Funcionários</label>
+        <input type="text" id="nome" placeholder="Digite seu nome">
+    </div>
+
+    <div class="field">
+        <label for="nome">Nome Funcionários</label>
+        <input type="text" id="nome" placeholder="Digite seu nome">
+    </div>
+
+    <div class="field">
+        <label for="nome">Loja, N°, Setor</label>
+        <input type="text" id="nome" placeholder="Digite seu nome">
+    </div>
+
+    <div class="field">
+        <label for="nome">Tema DSS</label>
+        <input type="text" id="nome" placeholder="Digite o tema da reunião">
+    </div>
+
+    <div class="field">
+        <label for="data">Data:</label>
+        <input type="date" id="data">
+    </div>
+
+    <div class="field">
+        <label>Assinatura:</label>
+        <div class="signature-wrapper">
+            <canvas id="signature-pad"></canvas>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button class="btn-clear" onclick="clearSignature()">Limpar Assinatura</button>
+        <button class="btn-save" onclick="generatePDF()">Gerar PDF</button>
+    </div>
+</div>
+
+<script>
+    // Inicializar o Signature Pad
+    const canvas = document.getElementById('signature-pad');
+    const signaturePad = new SignaturePad(canvas);
+
+    // Ajustar o tamanho do canvas para o desenho não ficar distorcido
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear();
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function clearSignature() {
+        signaturePad.clear();
+    }
+
+    function generatePDF() {
+        if (signaturePad.isEmpty()) {
+            alert("Por favor, forneça uma assinatura.");
+            return;
+        }
+
+        const element = document.getElementById('pdf-content');
+        const buttons = document.querySelector('.buttons');
+        
+        // Esconder botões temporariamente para não aparecerem no PDF
+        buttons.style.display = 'none';
+
+        const options = {
+            margin:       10,
+            filename:     'documento_assinado.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // Gerar o PDF e depois restaurar os botões
+        html2pdf().set(options).from(element).save().then(() => {
+            buttons.style.display = 'flex';
+        });
+    }
+</script>
+
+</html>
+
+
